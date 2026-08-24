@@ -1,11 +1,2915 @@
 <?php
-	if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
-		$uri = 'https://';
-	} else {
-		$uri = 'http://';
-	}
-	$uri .= $_SERVER['HTTP_HOST'];
-	header('Location: '.$uri.'/dashboard/');
-	exit;
+
+require_once "koneksi.php";
+
+$keyword = "";
+$books = [];
+
+/* =========================================================
+   PENCARIAN BUKU
+========================================================= */
+
+if (isset($_GET['search'])) {
+
+    $keyword = trim($_GET['search']);
+
+    if ($keyword !== "") {
+
+        $search = "%" . $keyword . "%";
+
+        $stmt = mysqli_prepare(
+            $conn,
+            "SELECT *
+             FROM books
+             WHERE judul LIKE ?
+             ORDER BY judul ASC"
+        );
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "s",
+            $search
+        );
+
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $books[] = $row;
+        }
+
+        mysqli_stmt_close($stmt);
+    }
+}
+
+
+/* =========================================================
+   KOLEKSI BUKU
+========================================================= */
+
+$query = mysqli_query(
+    $conn,
+    "SELECT *
+     FROM books
+     ORDER BY book_id DESC
+     LIMIT 8"
+);
+
+
+
+/* =========================================================
+   TOTAL BUKU
+========================================================= */
+
+$countQuery = mysqli_query(
+    $conn,
+    "SELECT COUNT(*) AS total FROM books"
+);
+
+$countData = mysqli_fetch_assoc($countQuery);
+
+$totalBooks = $countData['total'];
+
 ?>
-Something is wrong with the XAMPP installation :-(
+
+<!DOCTYPE html>
+
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Perpustakaan Kejaksaan Negeri Kota Cimahi
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+
+    <!-- =====================================================
+         OVERRIDE KHUSUS INDEX.PHP
+    ====================================================== -->
+
+    <style>
+
+        /* =====================================================
+           LOGO - PENGATURAN UTAMA
+        ===================================================== */
+
+        .logo-kejaksaan {
+            display: block !important;
+
+            object-fit: contain !important;
+
+            object-position: center !important;
+
+            max-width: 100% !important;
+            max-height: 100% !important;
+
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+
+        /* =====================================================
+           LOGO NAVBAR
+        ===================================================== */
+
+        .navbar .brand-logo {
+            width: 64px !important;
+            height: 64px !important;
+
+            min-width: 64px !important;
+            max-width: 64px !important;
+
+            min-height: 64px !important;
+            max-height: 64px !important;
+
+            display: flex !important;
+
+            align-items: center !important;
+            justify-content: center !important;
+
+            overflow: hidden !important;
+
+            flex-shrink: 0 !important;
+
+            position: relative !important;
+        }
+
+
+        .navbar .brand-logo .logo-kejaksaan {
+            width: 54px !important;
+            height: 54px !important;
+
+            min-width: 54px !important;
+            max-width: 54px !important;
+
+            min-height: 54px !important;
+            max-height: 54px !important;
+
+            object-fit: contain !important;
+        }
+
+
+        /* =====================================================
+           LOGO PADA ABOUT / TENTANG
+        ===================================================== */
+
+        .about-card .about-symbol {
+            width: 88px !important;
+            height: 88px !important;
+
+            min-width: 88px !important;
+            max-width: 88px !important;
+
+            min-height: 88px !important;
+            max-height: 88px !important;
+
+            margin: 0 auto 20px !important;
+
+            display: flex !important;
+
+            align-items: center !important;
+            justify-content: center !important;
+
+            overflow: hidden !important;
+
+            position: relative !important;
+        }
+
+
+        .about-card .about-symbol .logo-kejaksaan {
+            width: 78px !important;
+            height: 78px !important;
+
+            min-width: 78px !important;
+            max-width: 78px !important;
+
+            min-height: 78px !important;
+            max-height: 78px !important;
+
+            object-fit: contain !important;
+        }
+
+
+        /* =====================================================
+           LOGO FOOTER
+        ===================================================== */
+
+        .footer .footer-brand .brand-logo {
+            width: 56px !important;
+            height: 56px !important;
+
+            min-width: 56px !important;
+            max-width: 56px !important;
+
+            min-height: 56px !important;
+            max-height: 56px !important;
+
+            display: flex !important;
+
+            align-items: center !important;
+            justify-content: center !important;
+
+            overflow: hidden !important;
+
+            flex-shrink: 0 !important;
+
+            position: relative !important;
+        }
+
+
+        .footer .footer-brand .brand-logo .logo-kejaksaan {
+            width: 48px !important;
+            height: 48px !important;
+
+            min-width: 48px !important;
+            max-width: 48px !important;
+
+            min-height: 48px !important;
+            max-height: 48px !important;
+
+            object-fit: contain !important;
+        }
+
+
+        /* =====================================================
+           LOGO ADMIN
+        ===================================================== */
+
+        .admin-logo {
+            width: 64px !important;
+            height: 64px !important;
+
+            max-width: 64px !important;
+            max-height: 64px !important;
+
+            overflow: hidden !important;
+        }
+
+
+        .admin-logo .logo-kejaksaan {
+            width: 56px !important;
+            height: 56px !important;
+
+            max-width: 56px !important;
+            max-height: 56px !important;
+
+            object-fit: contain !important;
+        }
+
+
+        /* =====================================================
+           ROBOT
+        ===================================================== */
+
+        .library-robot {
+            position: absolute;
+
+            right: 7%;
+            bottom: 55px;
+
+            width: 170px;
+            height: 220px;
+
+            z-index: 5;
+
+            pointer-events: none;
+
+            animation:
+                libraryRobotFloat
+                4s
+                ease-in-out
+                infinite;
+        }
+
+
+        .library-robot .robot-antenna {
+            position: absolute;
+
+            top: 0;
+            left: 50%;
+
+            width: 3px;
+            height: 25px;
+
+            background: var(--gold);
+
+            transform: translateX(-50%);
+        }
+
+
+        .library-robot .robot-antenna span {
+            position: absolute;
+
+            top: -5px;
+            left: 50%;
+
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: var(--gold);
+
+            transform: translateX(-50%);
+
+            box-shadow:
+                0 0 8px rgba(212, 175, 55, .35);
+        }
+
+
+        .library-robot .robot-head {
+            position: absolute;
+
+            top: 24px;
+            left: 50%;
+
+            width: 70px;
+            height: 55px;
+
+            transform: translateX(-50%);
+
+            background: var(--white);
+
+            border: 3px solid var(--gold);
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 5px 15px rgba(192, 192, 192, .20);
+        }
+
+
+        .library-robot .robot-eye {
+            position: absolute;
+
+            top: 20px;
+
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: var(--gold);
+        }
+
+
+        .library-robot .robot-eye.left {
+            left: 15px;
+        }
+
+
+        .library-robot .robot-eye.right {
+            right: 15px;
+        }
+
+
+        .library-robot .robot-mouth {
+            position: absolute;
+
+            left: 50%;
+            bottom: 11px;
+
+            width: 22px;
+            height: 7px;
+
+            transform: translateX(-50%);
+
+            border-bottom:
+                2px solid var(--silver);
+
+            border-radius:
+                0 0 50% 50%;
+        }
+
+
+        .library-robot .robot-body {
+            position: absolute;
+
+            top: 87px;
+            left: 50%;
+
+            width: 75px;
+            height: 70px;
+
+            transform: translateX(-50%);
+
+            background: var(--white);
+
+            border: 3px solid var(--gold);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 5px 15px rgba(192, 192, 192, .20);
+        }
+
+
+        .library-robot .robot-dots {
+            position: absolute;
+
+            top: 27px;
+            left: 50%;
+
+            display: flex;
+
+            gap: 8px;
+
+            transform: translateX(-50%);
+        }
+
+
+        .library-robot .robot-dots span {
+            width: 5px;
+            height: 5px;
+
+            border-radius: 50%;
+
+            background: var(--gold);
+        }
+
+
+        .library-robot .robot-arm {
+            position: absolute;
+
+            top: 91px;
+
+            width: 15px;
+            height: 48px;
+
+            background: var(--silver);
+
+            border-radius: 10px;
+
+            animation: none !important;
+        }
+
+
+        .library-robot .left-arm {
+            left: 32px;
+
+            transform: rotate(12deg);
+
+            transform-origin: center top;
+        }
+
+
+        .library-robot .right-arm {
+            right: 32px;
+
+            transform: rotate(-12deg);
+
+            transform-origin: center top;
+        }
+
+
+        .library-robot .robot-hand {
+            position: absolute;
+
+            bottom: -3px;
+            left: 50%;
+
+            width: 15px;
+            height: 15px;
+
+            transform: translateX(-50%);
+
+            background: var(--silver);
+
+            border-radius: 50%;
+        }
+
+
+        .library-robot .robot-leg {
+            position: absolute;
+
+            top: 153px;
+
+            width: 14px;
+            height: 38px;
+
+            background: var(--silver);
+
+            border-radius:
+                0 0 7px 7px;
+        }
+
+
+        .library-robot .left-leg {
+            left: 62px;
+        }
+
+
+        .library-robot .right-leg {
+            right: 62px;
+        }
+
+
+        .library-robot .robot-shadow {
+            position: absolute;
+
+            left: 50%;
+            bottom: 5px;
+
+            width: 70px;
+            height: 12px;
+
+            transform: translateX(-50%);
+
+            background:
+                rgba(192, 192, 192, .25);
+
+            border-radius: 50%;
+
+            filter: blur(2px);
+
+            animation:
+                libraryRobotShadow
+                4s
+                ease-in-out
+                infinite;
+        }
+
+
+        @keyframes libraryRobotFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-7px);
+            }
+
+        }
+
+
+        @keyframes libraryRobotShadow {
+
+            0%,
+            100% {
+
+                transform:
+                    translateX(-50%)
+                    scaleX(1);
+
+                opacity: .25;
+
+            }
+
+            50% {
+
+                transform:
+                    translateX(-50%)
+                    scaleX(.82);
+
+                opacity: .16;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE LOGO
+        ===================================================== */
+
+        @media (max-width: 750px) {
+
+            .navbar .brand-logo {
+
+                width: 52px !important;
+                height: 52px !important;
+
+                min-width: 52px !important;
+                max-width: 52px !important;
+
+                min-height: 52px !important;
+                max-height: 52px !important;
+
+            }
+
+
+            .navbar .brand-logo .logo-kejaksaan {
+
+                width: 44px !important;
+                height: 44px !important;
+
+                min-width: 44px !important;
+                max-width: 44px !important;
+
+                min-height: 44px !important;
+                max-height: 44px !important;
+
+            }
+
+
+            .about-card .about-symbol {
+
+                width: 75px !important;
+                height: 75px !important;
+
+                min-width: 75px !important;
+                max-width: 75px !important;
+
+                min-height: 75px !important;
+                max-height: 75px !important;
+
+            }
+
+
+            .about-card .about-symbol .logo-kejaksaan {
+
+                width: 66px !important;
+                height: 66px !important;
+
+                min-width: 66px !important;
+                max-width: 66px !important;
+
+                min-height: 66px !important;
+                max-height: 66px !important;
+
+            }
+
+
+            .footer .footer-brand .brand-logo {
+
+                width: 50px !important;
+                height: 50px !important;
+
+                min-width: 50px !important;
+                max-width: 50px !important;
+
+                min-height: 50px !important;
+                max-height: 50px !important;
+
+            }
+
+
+            .footer .footer-brand .brand-logo .logo-kejaksaan {
+
+                width: 42px !important;
+                height: 42px !important;
+
+                min-width: 42px !important;
+                max-width: 42px !important;
+
+                min-height: 42px !important;
+                max-height: 42px !important;
+
+            }
+
+
+            .library-robot {
+
+                right: 50%;
+
+                bottom: 25px;
+
+                transform:
+                    translateX(50%)
+                    scale(.75);
+
+                transform-origin:
+                    bottom center;
+            }
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE ROBOT 1000PX
+        ===================================================== */
+
+        @media (min-width: 751px) and (max-width: 1000px) {
+
+            .library-robot {
+
+                right: 3%;
+
+                transform-origin:
+                    bottom right;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ROBOT PADA MOBILE KECIL
+        ===================================================== */
+
+        @media (max-width: 500px) {
+
+            .library-robot {
+                display: none;
+            }
+
+        }
+
+
+        /* =========================================================
+           POPUP TATA TERTIB PERPUSTAKAAN
+           
+           POPUP DEFAULT DISEMBUNYIKAN.
+           JAVASCRIPT AKAN MENAMPILKANNYA HANYA JIKA
+           PENGGUNA BELUM PERNAH MENEKAN "SAYA MENGERTI".
+        ========================================================= */
+
+        .rules-overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(18, 60, 44, 0.55);
+
+            backdrop-filter: blur(5px);
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 25px;
+
+            z-index: 99999;
+
+            animation:
+                rulesFadeIn .3s ease;
+        }
+
+
+        .rules-overlay.show {
+            display: flex;
+        }
+
+
+        .rules-modal {
+
+            width: 100%;
+
+            max-width: 850px;
+
+            max-height: 90vh;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            border: 1px solid #e5e9e5;
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,.20);
+
+            overflow: hidden;
+
+            display: flex;
+
+            flex-direction: column;
+
+            animation:
+                rulesSlideUp .35s ease;
+        }
+
+
+        /* =====================================================
+           HEADER POPUP
+        ===================================================== */
+
+        .rules-header {
+
+            text-align: center;
+
+            padding: 25px 30px 18px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #fffdf7 0%,
+                    #ffffff 100%
+                );
+
+            border-bottom:
+                1px solid #edf0ed;
+        }
+
+
+        /* =====================================================
+           KUBUS LOGO
+        ===================================================== */
+
+        .rules-logo-box {
+
+            width: 82px;
+
+            height: 82px;
+
+            margin: 0 auto 13px;
+
+            background: #d8b86a;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            box-shadow:
+                0 6px 15px
+                rgba(216,184,106,.25);
+
+            overflow: hidden;
+        }
+
+
+        .rules-logo-box img {
+
+            width: 68px;
+
+            height: 68px;
+
+            object-fit: contain;
+
+            display: block;
+        }
+
+
+        /* =====================================================
+           JUDUL
+        ===================================================== */
+
+        .rules-header h2 {
+
+            margin: 0;
+
+            color: #123c2c;
+
+            font-family: Georgia, serif;
+
+            font-size: 23px;
+
+            letter-spacing: .3px;
+        }
+
+
+        .rules-header p {
+
+            margin-top: 5px;
+
+            color: #8b938e;
+
+            font-size: 10px;
+        }
+
+
+        /* =====================================================
+           ISI TATA TERTIB
+        ===================================================== */
+
+        .rules-content {
+
+            padding: 20px 30px 10px;
+
+            overflow-y: auto;
+
+            flex: 1;
+        }
+
+
+        .rules-content h3 {
+
+            color: #123c2c;
+
+            font-family: Georgia, serif;
+
+            font-size: 17px;
+
+            margin-bottom: 12px;
+
+            text-align: center;
+        }
+
+
+        .rules-list {
+
+            margin: 0;
+
+            padding-left: 25px;
+
+            color: #4e5752;
+
+            font-size: 11px;
+
+            line-height: 1.65;
+        }
+
+
+        .rules-list li {
+
+            padding-left: 5px;
+
+            margin-bottom: 7px;
+        }
+
+
+        /* =====================================================
+           KETERANGAN TAMBAHAN
+        ===================================================== */
+
+        .rules-note {
+
+            margin-top: 20px;
+
+            padding: 12px 15px;
+
+            background: #faf9f3;
+
+            border-left:
+                3px solid #d8b86a;
+
+            border-radius: 6px;
+
+            text-align: right;
+
+            color: #777;
+
+            font-size: 9px;
+
+            line-height: 1.6;
+        }
+
+
+        .rules-note strong {
+
+            display: block;
+
+            color: #315c49;
+
+            font-size: 9px;
+
+            margin-bottom: 2px;
+        }
+
+
+        /* =====================================================
+           FOOTER POPUP
+        ===================================================== */
+
+        .rules-footer {
+
+            padding: 15px 30px;
+
+            border-top:
+                1px solid #edf0ed;
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            background: #ffffff;
+        }
+
+
+        .rules-close {
+
+            border: none;
+
+            background: #123c2c;
+
+            color: #ffffff;
+
+            padding: 10px 22px;
+
+            border-radius: 7px;
+
+            font-size: 10px;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+
+        .rules-close:hover {
+
+            background: #1d5540;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* =====================================================
+           ANIMASI
+        ===================================================== */
+
+        @keyframes rulesFadeIn {
+
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+
+        }
+
+
+        @keyframes rulesSlideUp {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(20px)
+                    scale(.98);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE POPUP
+        ===================================================== */
+
+        @media(max-width:600px) {
+
+            .rules-overlay {
+
+                padding: 12px;
+            }
+
+
+            .rules-modal {
+
+                max-height: 94vh;
+
+                border-radius: 14px;
+            }
+
+
+            .rules-header {
+
+                padding:
+                    20px 18px 15px;
+            }
+
+
+            .rules-logo-box {
+
+                width: 70px;
+
+                height: 70px;
+            }
+
+
+            .rules-logo-box img {
+
+                width: 58px;
+
+                height: 58px;
+            }
+
+
+            .rules-header h2 {
+
+                font-size: 19px;
+            }
+
+
+            .rules-content {
+
+                padding:
+                    17px 18px 8px;
+            }
+
+
+            .rules-list {
+
+                font-size: 10px;
+
+                line-height: 1.55;
+
+                padding-left: 21px;
+            }
+
+
+            .rules-footer {
+
+                padding:
+                    12px 18px;
+            }
+
+        }
+		
+		/* =========================================================
+   OVERRIDE WARNA TEKS
+   TEMA: GOLD / KUNING + HITAM
+   Tidak mengubah fungsi PHP / JavaScript
+========================================================= */
+
+/* =========================
+   TEKS UTAMA
+========================= */
+
+body {
+    color: #111111 !important;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar .brand-text strong {
+    color: #111111 !important;
+}
+
+.navbar .brand-text small {
+    color: #555555 !important;
+}
+
+.nav-menu a {
+    color: #222222 !important;
+}
+
+.nav-menu a:hover {
+    color: #C9A227 !important;
+}
+
+
+/* =========================
+   BUTTON ADMIN
+========================= */
+
+.admin-button {
+    background: #C9A227 !important;
+    color: #FFFFFF !important;
+    border-color: #C9A227 !important;
+}
+
+.admin-button:hover {
+    background: #D8B86A !important;
+    color: #FFFFFF !important;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero h1 {
+    color: #111111 !important;
+}
+
+.hero h1 span {
+    color: #C9A227 !important;
+}
+
+.hero p {
+    color: #333333 !important;
+}
+
+.badge {
+    color: #8A6A0A !important;
+    background: #FFF8DD !important;
+    border-color: #D8B86A !important;
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-box input {
+    color: #111111 !important;
+}
+
+.search-box input::placeholder {
+    color: #777777 !important;
+}
+
+.search-box button {
+    background: #C9A227 !important;
+    color: #FFFFFF !important;
+}
+
+.search-box button:hover {
+    background: #D8B86A !important;
+    color: #111111 !important;
+}
+
+
+/* =========================
+   HASIL PENCARIAN
+========================= */
+
+.search-result-card h3 {
+    color: #111111 !important;
+}
+
+.result-info {
+    color: #222222 !important;
+}
+
+.result-info small {
+    color: #666666 !important;
+}
+
+.result-info strong {
+    color: #111111 !important;
+}
+
+.result-location {
+    color: #C9A227 !important;
+}
+
+.book-code {
+    color: #555555 !important;
+}
+
+.search-empty strong {
+    color: #111111 !important;
+}
+
+.search-empty p {
+    color: #555555 !important;
+}
+
+
+/* =========================
+   STATISTIK
+========================= */
+
+.stat-item strong {
+    color: #111111 !important;
+}
+
+.stat-item span {
+    color: #555555 !important;
+}
+
+.stat-icon {
+    color: #C9A227 !important;
+}
+
+
+/* =========================
+   JUDUL SECTION
+========================= */
+
+.section-label {
+    color: #B18A18 !important;
+}
+
+.section-heading h2 {
+    color: #111111 !important;
+}
+
+.section-heading p {
+    color: #444444 !important;
+}
+
+
+/* =========================
+   KOLEKSI BUKU
+========================= */
+
+.book-card h3 {
+    color: #111111 !important;
+}
+
+.book-info {
+    color: #222222 !important;
+}
+
+.book-location {
+    color: #C9A227 !important;
+}
+
+.book-location small {
+    color: #666666 !important;
+}
+
+.book-location strong {
+    color: #111111 !important;
+}
+
+.book-card .book-code {
+    color: #555555 !important;
+}
+
+
+/* =========================
+   TOMBOL LIHAT LAINNYA
+========================= */
+
+.lihat-semua-btn {
+    color: #FFFFFF !important;
+    background: #C9A227 !important;
+    border-color: #C9A227 !important;
+}
+
+.lihat-semua-btn:hover {
+    background: #C9A227 !important;
+    color: #111111 !important;
+}
+
+
+/* =========================
+   KATEGORI
+========================= */
+
+.category-card {
+    color: #111111 !important;
+}
+
+.category-card span {
+    color: #C9A227 !important;
+}
+
+.category-card strong {
+    color: #111111 !important;
+}
+
+.category-card small {
+    color: #555555 !important;
+}
+
+.category-card:hover {
+    border-color: #C9A227 !important;
+}
+
+.category-card:hover strong {
+    color: #111111 !important;
+}
+
+
+/* =========================
+   TENTANG
+========================= */
+
+.about-content h2 {
+    color: #111111 !important;
+}
+
+.about-content p {
+    color: #333333 !important;
+}
+
+.about-features div {
+    color: #222222 !important;
+}
+
+.about-features div::first-letter {
+    color: #C9A227 !important;
+}
+
+.about-card h3 {
+    color: #111111 !important;
+}
+
+.about-card p {
+    color: #555555 !important;
+}
+
+
+/* =========================
+   POPUP TATA TERTIB
+========================= */
+
+.rules-header h2 {
+    color: #111111 !important;
+}
+
+.rules-header p {
+    color: #555555 !important;
+}
+
+.rules-content h3 {
+    color: #111111 !important;
+}
+
+.rules-list {
+    color: #222222 !important;
+}
+
+.rules-list li {
+    color: #222222 !important;
+}
+
+.rules-note {
+    color: #555555 !important;
+    border-left-color: #C9A227 !important;
+}
+
+.rules-note strong {
+    color: #111111 !important;
+}
+
+.rules-close {
+    background: #C9A227 !important;
+    color: #111111 !important;
+}
+
+.rules-close:hover {
+    background: #D8B86A !important;
+    color: #111111 !important;
+}
+
+
+/* =========================
+   ROBOT
+========================= */
+
+.library-robot .robot-antenna,
+.library-robot .robot-antenna span,
+.library-robot .robot-eye,
+.library-robot .robot-dots span {
+    background: #C9A227 !important;
+}
+
+.library-robot .robot-head,
+.library-robot .robot-body {
+    border-color: #C9A227 !important;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    color: #222222 !important;
+}
+
+.footer-brand strong {
+    color: #111111 !important;
+}
+
+.footer-brand span {
+    color: #555555 !important;
+}
+
+.footer-brand p {
+    color: #444444 !important;
+}
+
+.footer-links h4,
+.footer-contact h4 {
+    color: #111111 !important;
+}
+
+.footer-links a {
+    color: #444444 !important;
+}
+
+.footer-links a:hover {
+    color: #C9A227 !important;
+}
+
+.footer-contact p {
+    color: #444444 !important;
+}
+
+.footer-contact a {
+    color: #222222 !important;
+}
+
+.footer-contact a:hover {
+    color: #C9A227 !important;
+}
+
+.footer-bottom {
+    color: #555555 !important;
+}
+
+.footer-bottom span {
+    color: #777777 !important;
+}
+
+
+/* =========================================================
+   HILANGKAN DOMINASI WARNA HIJAU PADA TEKS
+========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+strong,
+small,
+a,
+li {
+    --text-dark: #111111;
+}
+
+
+/* =========================
+   AKSEN GOLD
+========================= */
+
+.gold-text {
+    color: #C9A227 !important;
+}
+
+
+/* =========================
+   SELECTION
+========================= */
+
+::selection {
+    background: #D8B86A;
+    color: #111111;
+}
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     POPUP TATA TERTIB PERPUSTAKAAN
+     
+     DEFAULT: TERSEMBUNYI
+     Akan ditampilkan JavaScript jika belum pernah
+     ditutup oleh pengguna.
+========================================================= -->
+
+<div
+    class="rules-overlay"
+    id="rulesPopup"
+>
+
+    <div class="rules-modal">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <div class="rules-header">
+
+            <div class="rules-logo-box">
+
+                <img
+                    src="assets/logo-kejari-cimahi.png"
+                    alt="Logo Kejaksaan Negeri Kota Cimahi"
+                >
+
+            </div>
+
+
+            <h2>
+                TATA TERTIB PERPUSTAKAAN
+            </h2>
+
+
+            <p>
+                Perpustakaan Kejaksaan Negeri Kota Cimahi
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             ISI
+        ================================================== -->
+
+        <div class="rules-content">
+
+
+            <ol class="rules-list">
+
+
+                <li>
+                    Perpustakaan dan dokumen hukum dibuka setiap hari kerja
+                    dari pukul 08.00-15.00 WIB.
+                </li>
+
+
+                <li>
+                    Pemustaka harus mengisi buku kunjungan yang telah disediakan.
+                </li>
+
+
+                <li>
+                    Pemustaka harus menjaga ketenangan di dalam ruang perpustakaan
+                    dan dokumentasi hukum, agar tidak mengganggu para pengguna jasa lainnya.
+                </li>
+
+
+                <li>
+                    Pemustaka tidak diperkenankan membawa tas, jaket, atau sejenisnya,
+                    harus dititipkan di lemari penitipan (locker).
+                </li>
+
+
+                <li>
+                    Uang dan barang berharga lainnya harus dibawa,
+                    tidak disimpan di locker.
+                </li>
+
+
+                <li>
+                    Pemustaka harus menjaga keutuhan, kerapian dan kebersihan
+                    koleksi perpustakaan.
+                </li>
+
+
+                <li>
+                    Pemustaka tidak merokok, makan, minum dan tidur
+                    di dalam ruang perpustakaan.
+                </li>
+
+
+                <li>
+                    Koleksi yang sudah dibaca, disimpan di meja baca,
+                    tidak disimpan di rak.
+                </li>
+
+
+                <li>
+                    Pemustaka tidak diperkenankan untuk menggunting,
+                    mengubah dan mencorat-coret koleksi.
+                </li>
+
+
+                <li>
+                    Bahan pustaka yang dipinjam maksimal 2 (dua) eksemplar.
+                </li>
+
+
+                <li>
+                    Lama peminjaman bahan pustaka 1 (satu) minggu dan dapat
+                    diperpanjang selama 1 (satu) minggu lagi pada judul yang sama
+                    dengan menunjukan bahan pustaka yang dimaksud pada petugas perpustakaan.
+                </li>
+
+
+                <li>
+                    Setiap peminjaman dan pengembalian bahan pustaka harus memakai
+                    kartu anggota perpustakaan dan tidak boleh meminjamkan kartu tersebut
+                    kepada orang lain untuk keperluan dimaksud.
+                </li>
+
+
+                <li>
+                    Pemustaka harus mematuhi peraturan yang telah ditetapkan.
+                </li>
+
+
+                <li>
+                    Pemustaka yang berasal dari luar instansi kejaksaan,
+                    hanya diperkenankan untuk membaca koleksi perpustakaan.
+                </li>
+
+
+            </ol>
+
+
+            <!-- =================================================
+                 KETERANGAN TAMBAHAN
+            ================================================== -->
+
+            <div class="rules-note">
+
+                Peraturan Jaksa Agung Republik Indonesian<br>
+
+                Nomor : PER-038/JA/09/2011<br>
+
+                Tanggal : 23 September 2011
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <div class="rules-footer">
+
+            <button
+                type="button"
+                class="rules-close"
+                onclick="closeRulesPopup()"
+            >
+                Saya Mengerti
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<header class="navbar">
+
+    <div class="nav-container">
+
+
+        <!-- LOGO + BRAND -->
+
+        <a
+            href="index.php"
+            class="brand"
+        >
+
+            <div class="brand-logo">
+
+                <img
+                    src="assets/logo-kejari-cimahi.png"
+                    alt="Logo Kejaksaan Negeri Kota Cimahi"
+                    class="logo-kejaksaan"
+                >
+
+            </div>
+
+
+            <div class="brand-text">
+
+                <strong>
+                    PERPUSTAKAAN
+                </strong>
+
+                <small>
+                    KEJAKSAAN NEGERI KOTA CIMAHI
+                </small>
+
+            </div>
+
+        </a>
+
+
+        <!-- NAVIGASI -->
+
+        <nav class="nav-menu">
+
+            <a href="#beranda">
+                Beranda
+            </a>
+
+            <a href="#koleksi">
+                Koleksi
+            </a>
+
+            <a href="#kategori">
+                Kategori
+            </a>
+
+            <a href="#tentang">
+                Tentang
+            </a>
+
+        </nav>
+
+
+        <!-- ADMIN -->
+
+        <a
+            href="admin.php"
+            class="admin-button"
+        >
+            Admin
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<section
+    class="hero"
+    id="beranda"
+>
+
+
+    <div class="hero-content">
+
+
+        <div class="badge">
+
+            SISTEM INFORMASI PERPUSTAKAAN
+
+        </div>
+
+
+        <h1>
+
+            Temukan Buku,<br>
+
+            <span>
+                Temukan Pengetahuan.
+            </span>
+
+        </h1>
+
+
+        <p>
+
+            Jelajahi koleksi perpustakaan
+            Kejaksaan Negeri Cimahi
+            dan temukan lokasi buku yang
+            Anda butuhkan dengan mudah.
+
+        </p>
+
+
+        <!-- =================================================
+             SEARCH
+        ================================================== -->
+
+        <form
+            class="search-box"
+            method="GET"
+            action="index.php"
+        >
+
+            <div class="search-icon">
+                🔍
+            </div>
+
+
+            <input
+                type="text"
+                name="search"
+                placeholder="Cari judul buku..."
+                value="<?php
+                    echo htmlspecialchars($keyword);
+                ?>"
+            >
+
+
+            <button type="submit">
+                Cari Buku
+            </button>
+
+        </form>
+
+
+        <!-- =================================================
+             HASIL PENCARIAN
+        ================================================== -->
+
+        <?php if (
+            isset($_GET['search']) &&
+            $keyword !== ""
+        ): ?>
+
+
+            <div class="search-results">
+
+
+                <?php if (count($books) > 0): ?>
+
+
+                    <?php foreach ($books as $book): ?>
+
+
+                        <div class="search-result-card">
+
+
+                            <div class="result-image">
+
+
+                                <?php if (!empty($book['foto'])): ?>
+
+
+                                    <img
+                                        src="<?php
+                                            echo htmlspecialchars(
+                                                $book['foto']
+                                            );
+                                        ?>"
+                                        alt="<?php
+                                            echo htmlspecialchars(
+                                                $book['judul']
+                                            );
+                                        ?>"
+                                    >
+
+
+                                <?php else: ?>
+
+
+                                    <div class="no-image">
+
+                                        Foto tidak tersedia
+
+                                    </div>
+
+
+                                <?php endif; ?>
+
+
+                            </div>
+
+
+                            <div class="result-info">
+
+
+                                <h3>
+
+                                    <?php
+                                    echo htmlspecialchars(
+                                        $book['judul']
+                                    );
+                                    ?>
+
+                                </h3>
+
+
+                                <div class="result-location">
+
+                                    📍
+
+                                    <div>
+
+                                        <small>
+                                            LOKASI BUKU
+                                        </small>
+
+                                        <strong>
+
+                                            <?php
+                                            echo htmlspecialchars(
+                                                $book['tempat_rak']
+                                            );
+                                            ?>
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <p class="book-code">
+
+                                    Book ID:
+
+                                    <?php
+                                    echo htmlspecialchars(
+                                        $book['book_id']
+                                    );
+                                    ?>
+
+                                </p>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    <?php endforeach; ?>
+
+
+                <?php else: ?>
+
+
+                    <div class="search-empty">
+
+
+                        <strong>
+                            Buku tidak ditemukan
+                        </strong>
+
+
+                        <p>
+
+                            Tidak ditemukan buku dengan kata:
+
+                            "<?php
+                            echo htmlspecialchars($keyword);
+                            ?>"
+
+                        </p>
+
+
+                    </div>
+
+
+                <?php endif; ?>
+
+
+            </div>
+
+
+        <?php endif; ?>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         ROBOT
+    ====================================================== -->
+
+    <div
+        class="library-robot"
+        aria-hidden="true"
+    >
+
+
+        <!-- ANTENA -->
+
+        <div class="robot-antenna">
+
+            <span></span>
+
+        </div>
+
+
+        <!-- KEPALA -->
+
+        <div class="robot-head">
+
+            <div class="robot-eye left"></div>
+
+            <div class="robot-eye right"></div>
+
+            <div class="robot-mouth"></div>
+
+        </div>
+
+
+        <!-- BADAN -->
+
+        <div class="robot-body">
+
+            <div class="robot-dots">
+
+                <span></span>
+
+                <span></span>
+
+                <span></span>
+
+            </div>
+
+        </div>
+
+
+        <!-- TANGAN KIRI -->
+
+        <div class="robot-arm left-arm">
+
+            <div class="robot-hand"></div>
+
+        </div>
+
+
+        <!-- TANGAN KANAN -->
+
+        <div class="robot-arm right-arm">
+
+            <div class="robot-hand"></div>
+
+        </div>
+
+
+        <!-- KAKI -->
+
+        <div class="robot-leg left-leg"></div>
+
+        <div class="robot-leg right-leg"></div>
+
+
+        <!-- BAYANGAN -->
+
+        <div class="robot-shadow"></div>
+
+
+    </div>
+
+
+</section>
+
+
+<!-- =========================================================
+     STATISTIK
+========================================================= -->
+
+<section class="statistics">
+
+
+    <div class="stat-item">
+
+
+        <div class="stat-icon">
+            📚
+        </div>
+
+
+        <div>
+
+            <strong>
+                <?php echo $totalBooks; ?>
+            </strong>
+
+
+            <span>
+                Total Koleksi
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="stat-item">
+
+
+        <div class="stat-icon">
+            📖
+        </div>
+
+
+        <div>
+
+            <strong>
+                <?php echo $totalBooks; ?>
+            </strong>
+
+
+            <span>
+                Buku Terdaftar
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="stat-item">
+
+
+        <div class="stat-icon">
+            🏷
+        </div>
+
+
+        <div>
+
+            <strong>
+                Perpustakaan
+            </strong>
+
+
+            <span>
+                Koleksi Digital
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="stat-item">
+
+
+        <div class="stat-icon">
+            📍
+        </div>
+
+
+        <div>
+
+            <strong>
+                Rak
+            </strong>
+
+
+            <span>
+                Lokasi Koleksi
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+<!-- =========================================================
+     KOLEKSI
+========================================================= -->
+
+<section
+    class="collection section"
+    id="koleksi"
+>
+
+    <div class="section-heading">
+
+        <span class="section-label">
+            KOLEKSI PERPUSTAKAAN
+        </span>
+
+        <div class="collection-title-row">
+
+            <h2>
+                Koleksi Buku
+            </h2>
+
+            <a href="koleksi.php" class="lihat-semua-btn">
+                Lihat Lainnya
+                <span>→</span>
+            </a>
+
+        </div>
+
+        <p>
+            Koleksi buku yang tersedia
+            di perpustakaan.
+        </p>
+
+    </div>
+
+
+    </div>
+
+
+    <div class="book-grid">
+
+
+        <?php while (
+            $book = mysqli_fetch_assoc($query)
+        ): ?>
+
+
+            <article class="book-card">
+
+
+                <div class="book-image">
+
+
+                    <?php if (!empty($book['foto'])): ?>
+
+
+                        <img
+                            src="<?php
+                                echo htmlspecialchars(
+                                    $book['foto']
+                                );
+                            ?>"
+                            alt="<?php
+                                echo htmlspecialchars(
+                                    $book['judul']
+                                );
+                            ?>"
+                        >
+
+
+                    <?php else: ?>
+
+
+                        <div class="no-image">
+                            Foto tidak tersedia
+                        </div>
+
+
+                    <?php endif; ?>
+
+
+                </div>
+
+
+                <div class="book-info">
+
+
+                    <h3>
+
+                        <?php
+                        echo htmlspecialchars(
+                            $book['judul']
+                        );
+                        ?>
+
+                    </h3>
+
+
+                    <div class="book-location">
+
+                        📍
+
+                        <div>
+
+                            <small>
+                                LOKASI BUKU
+                            </small>
+
+
+                            <strong>
+
+                                <?php
+                                echo htmlspecialchars(
+                                    $book['tempat_rak']
+                                );
+                                ?>
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <p class="book-code">
+
+                        <?php
+                        echo htmlspecialchars(
+                            $book['book_id']
+                        );
+                        ?>
+
+                    </p>
+
+
+                </div>
+
+
+            </article>
+
+
+        <?php endwhile; ?>
+
+
+    </div>
+
+
+</section>
+
+
+<!-- =========================================================
+     KATEGORI
+========================================================= -->
+
+<section
+    class="categories section"
+    id="kategori"
+>
+
+    <div class="section-heading centered">
+
+        <span class="section-label">
+            JELAJAHI KOLEKSI
+        </span>
+
+        <h2>
+            Kategori Buku
+        </h2>
+
+        <p>
+            Temukan koleksi perpustakaan.
+        </p>
+
+    </div>
+
+
+    <div class="category-grid">
+
+
+        <!-- HUKUM -->
+
+        <a
+            href="koleksi.php"
+            class="category-card"
+        >
+
+            <span>
+                ⚖
+            </span>
+
+            <strong>
+                Hukum
+            </strong>
+
+        </a>
+
+
+        <!-- PERATURAN -->
+
+        <a
+            href="koleksi.php"
+            class="category-card"
+        >
+
+            <span>
+                📜
+            </span>
+
+            <strong>
+                Peraturan
+            </strong>
+
+        </a>
+
+
+        <!-- PEMERINTAHAN -->
+
+        <a
+            href="koleksi.php"
+            class="category-card"
+        >
+
+            <span>
+                🏛
+            </span>
+
+            <strong>
+                Pemerintahan
+            </strong>
+
+        </a>
+
+
+        <!-- REFERENSI -->
+
+        <a
+            href="koleksi.php"
+            class="category-card"
+        >
+
+            <span>
+                📚
+            </span>
+
+            <strong>
+                Referensi
+            </strong>
+
+        </a>
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     TENTANG
+========================================================= -->
+
+<section
+    class="about section"
+    id="tentang"
+>
+
+
+    <div class="about-content">
+
+
+        <span class="section-label">
+            SISTEM INFORMASI PERPUSTAKAAN
+        </span>
+
+
+        <h2>
+
+            Akses Informasi,<br>
+
+            Lebih Mudah.
+
+        </h2>
+
+
+        <p>
+
+            Sistem Informasi Digitalisasi
+            Perpustakaan Kejaksaan Negeri
+            Kota Cimahi hadir untuk memudahkan
+            pencarian dan pengelolaan koleksi
+            perpustakaan.
+
+            Kejaksaan R.I. adalah lembaga negara
+            yang melaksanakan kekuasaan negara,
+            khususnya di bidang penuntutan.
+
+            Sebagai badan yang berwenang dalam
+            penegakan hukum dan keadilan,
+            Kejaksaan dipimpin oleh Jaksa Agung
+            yang dipilih oleh dan bertanggung jawab
+            kepada Presiden.
+
+            Kejaksaan Agung, Kejaksaan Tinggi,
+            dan Kejaksaan Negeri merupakan
+            satu kesatuan yang utuh dan tidak
+            dapat dipisahkan.
+
+            Mengacu pada Undang-Undang
+            No. 16 Tahun 2004 yang menggantikan
+            UU No. 5 Tahun 1991 tentang
+            Kejaksaan R.I., Kejaksaan sebagai
+            salah satu lembaga penegak hukum
+            dituntut untuk lebih berperan dalam
+            menegakkan supremasi hukum,
+            perlindungan kepentingan umum,
+            penegakan hak asasi manusia,
+            serta pemberantasan Korupsi,
+            Kolusi, dan Nepotisme (KKN).
+
+        </p>
+
+
+        <div class="about-features">
+
+
+            <div>
+                ✓
+                Pencarian koleksi dengan mudah
+            </div>
+
+
+            <div>
+                ✓
+                Informasi lokasi buku
+            </div>
+
+
+            <div>
+                ✓
+                Data koleksi terorganisir
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div class="about-card">
+
+
+        <div class="about-symbol">
+
+
+            <img
+                src="assets/logo-kejari-cimahi.png"
+                alt="Logo Kejaksaan Negeri Kota Cimahi"
+                class="logo-kejaksaan"
+            >
+
+
+        </div>
+
+
+        <h3>
+            Perpustakaan
+        </h3>
+
+
+        <p>
+
+            Kejaksaan Negeri<br>
+
+            Kota Cimahi
+
+        </p>
+
+
+    </div>
+
+
+</section>
+
+
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="footer">
+
+
+    <div class="footer-container">
+
+
+        <div class="footer-brand">
+
+
+            <div class="brand-logo">
+
+
+                <img
+                    src="assets/logo-kejari-cimahi.png"
+                    alt="Logo Kejaksaan Negeri Kota Cimahi"
+                    class="logo-kejaksaan"
+                >
+
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    PERPUSTAKAAN
+                </strong>
+
+
+                <span>
+                    KEJAKSAAN NEGERI KOTA CIMAHI
+                </span>
+
+
+            </div>
+
+
+            <p>
+
+                Sistem Informasi Digitalisasi Perpustakaan <br> 
+				untuk memudahkan akses informasi koleksi.
+
+            </p>
+
+
+        </div>
+
+
+        <div class="footer-links">
+
+
+            <h4>
+                Navigasi
+            </h4>
+
+
+            <a href="#beranda">
+                Beranda
+            </a>
+
+
+            <a href="#koleksi">
+                Koleksi
+            </a>
+
+
+            <a href="#kategori">
+                Kategori
+            </a>
+
+
+            <a href="https://kejari-cimahi.kejaksaan.go.id/tentang-kejaksaan" target="_blank">
+				Tentang 
+			</a>
+
+
+        </div>
+
+
+        <div class="footer-links">
+
+    <h4>
+        Informasi
+    </h4>
+
+    <a href="https://kejari-cimahi.kejaksaan.go.id/layanan/index.php" target="_blank">
+        Layanan Kontak
+    </a>
+
+    <a href="https://www.kejaksaan.go.id/" target="_blank">
+        Kejaksaan Agung RI
+    </a>
+
+    <a href="https://kejati-jawabarat.kejaksaan.go.id/" target="_blank">
+        Kejaksaan Tinggi Jawa Barat
+    </a>
+	
+	<a href="https://kejari-cimahi.kejaksaan.go.id/" target="_blank">
+		Kejaksaan Negeri Kota Cimahi 
+	</a>	
+
+</div>
+
+
+        <div class="footer-contact">
+
+
+            <h4>
+                Perpustakaan
+            </h4>
+
+
+            <p>
+
+                <a
+                    href="https://kejari-cimahi.kejaksaan.go.id/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+
+                    Kejaksaan Negeri Kota Cimahi
+
+                </a>
+
+            </p>
+
+
+            <a href="#tentang">
+                Sistem Informasi Perpustakaan
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+
+        <p>
+
+            © 2026 Perpustakaan
+            Kejaksaan Negeri Kota Cimahi.
+
+        </p>
+
+
+        <span>
+
+            Sistem Informasi Digitalisasi Perpustakaan
+
+        </span>
+
+
+    </div>
+
+
+</footer>
+
+
+<!-- =========================================================
+     JAVASCRIPT POPUP
+     
+     SISTEM:
+     1. Cek localStorage
+     2. Jika belum ada tanda "sudah melihat", popup muncul.
+     3. Setelah klik "Saya Mengerti", simpan tanda.
+     4. Refresh / pencarian tidak akan memunculkan popup lagi.
+========================================================= -->
+
+<script>
+
+/* =========================================================
+   POPUP TATA TERTIB PERPUSTAKAAN
+
+   SISTEM:
+   1. Saat index.php dibuka/refresh tanpa pencarian:
+      popup akan muncul.
+
+   2. Saat melakukan pencarian buku:
+      popup tidak akan muncul.
+
+   3. Saat halaman hasil pencarian di-refresh:
+      popup tetap tidak muncul.
+
+   4. Saat kembali ke index.php tanpa search:
+      popup akan muncul kembali.
+
+   5. Tidak menggunakan localStorage/sessionStorage,
+      sehingga refresh halaman utama akan menampilkan
+      popup kembali.
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const popup = document.getElementById("rulesPopup");
+
+    if (!popup) {
+        return;
+    }
+
+
+    /* =====================================================
+       CEK APAKAH HALAMAN SEDANG DALAM MODE PENCARIAN
+    ===================================================== */
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const searchKeyword = urlParams.get("search");
+
+
+    /*
+     * Jika terdapat parameter search dan isinya tidak kosong,
+     * berarti pengguna sedang melihat hasil pencarian.
+     *
+     * Dalam kondisi ini popup TIDAK ditampilkan.
+     */
+
+    if (
+        searchKeyword !== null &&
+        searchKeyword.trim() !== ""
+    ) {
+
+        popup.classList.remove("show");
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       JIKA BUKAN HALAMAN PENCARIAN
+       
+       Popup akan selalu muncul setiap kali index.php
+       dibuka atau di-refresh.
+    ===================================================== */
+
+    popup.classList.add("show");
+
+});
+
+
+/* =========================================================
+   TOMBOL "SAYA MENGERTI"
+========================================================= */
+
+function closeRulesPopup() {
+
+    const popup = document.getElementById("rulesPopup");
+
+
+    /*
+     * Popup hanya ditutup untuk halaman yang sedang dibuka.
+     *
+     * Tidak ada localStorage.
+     *
+     * Jadi ketika index.php di-refresh,
+     * popup akan muncul kembali.
+     */
+
+    if (popup) {
+
+        popup.classList.remove("show");
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>
