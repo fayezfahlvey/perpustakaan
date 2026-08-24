@@ -1,0 +1,1283 @@
+/* =========================================================
+   ADMIN STYLE
+   SISTEM INFORMASI DIGITALISASI PERPUSTAKAAN
+   TEMA : GOLD • YELLOW • SILVER • WHITE
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --gold: #D4AF37;
+    --gold-light: #F1D36B;
+    --gold-soft: #FFF8D9;
+    --gold-dark: #A88718;
+
+    --yellow: #E7C84A;
+    --yellow-light: #FFF4B8;
+
+    --silver: #C0C0C0;
+    --silver-dark: #707070;
+    --silver-light: #E5E5E5;
+    --silver-soft: #F5F5F5;
+
+    --white: #FFFFFF;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: var(--silver-soft);
+
+    color: var(--silver-dark);
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: 245px;
+    height: 100vh;
+
+    padding: 22px 15px;
+
+    background: var(--white);
+
+    border-right: 1px solid var(--silver-light);
+
+    box-shadow:
+        3px 0 15px rgba(192, 192, 192, .15);
+
+    z-index: 1000;
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 0 10px;
+
+    margin-bottom: 32px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--gold-light),
+            var(--gold)
+        );
+
+    color: var(--white);
+
+    font-size: 21px;
+
+    box-shadow:
+        0 4px 12px rgba(212, 175, 55, .20);
+}
+
+.logo-text strong {
+    display: block;
+
+    color: var(--gold-dark);
+
+    font-size: 11px;
+
+    letter-spacing: 1.3px;
+}
+
+.logo-text small {
+    display: block;
+
+    color: var(--silver-dark);
+
+    font-size: 8px;
+
+    margin-top: 3px;
+}
+
+/* =========================================================
+   MENU TITLE
+========================================================= */
+
+.menu-title {
+    color: var(--silver);
+
+    font-size: 8px;
+
+    letter-spacing: 1.7px;
+
+    margin: 20px 10px 8px;
+}
+
+/* =========================================================
+   MENU
+========================================================= */
+
+.menu {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+.menu a {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 11px 13px;
+
+    border-radius: 8px;
+
+    color: var(--silver-dark);
+
+    text-decoration: none;
+
+    font-size: 11px;
+
+    transition: .2s ease;
+}
+
+.menu a:hover {
+    background: var(--gold-soft);
+
+    color: var(--gold-dark);
+
+    transform: translateX(2px);
+}
+
+.menu a.active {
+    background:
+        linear-gradient(
+            90deg,
+            var(--gold-soft),
+            var(--white)
+        );
+
+    color: var(--gold-dark);
+
+    border-left: 3px solid var(--gold);
+}
+
+.menu a.logout {
+    color: var(--silver-dark);
+}
+
+.menu a.logout:hover {
+    background: var(--silver-soft);
+
+    color: var(--gold-dark);
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main {
+    margin-left: 245px;
+
+    min-height: 100vh;
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+    height: 70px;
+
+    background: var(--white);
+
+    border-bottom: 1px solid var(--silver-light);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 35px;
+
+    box-shadow:
+        0 2px 8px rgba(192, 192, 192, .12);
+}
+
+.topbar-title {
+    color: var(--silver-dark);
+
+    font-size: 18px;
+
+    font-weight: bold;
+}
+
+.topbar-title::after {
+    content: "";
+
+    display: block;
+
+    width: 35px;
+    height: 2px;
+
+    margin-top: 5px;
+
+    background: var(--gold);
+}
+
+/* =========================================================
+   ADMIN INFO
+========================================================= */
+
+.admin-info {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.admin-avatar {
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--gold-light),
+            var(--gold)
+        );
+
+    color: var(--white);
+
+    border: 1px solid var(--gold);
+}
+
+.admin-name {
+    color: var(--silver-dark);
+
+    font-size: 11px;
+
+    font-weight: bold;
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.content {
+    padding: 35px;
+}
+
+/* =========================================================
+   PAGE TITLE
+========================================================= */
+
+.page-title {
+    margin-bottom: 28px;
+}
+
+.page-title small {
+    color: var(--gold-dark);
+
+    font-size: 9px;
+
+    font-weight: bold;
+
+    letter-spacing: 1.6px;
+}
+
+.page-title h1 {
+    color: var(--silver-dark);
+
+    font-family: Georgia, serif;
+
+    font-size: 30px;
+
+    margin-top: 5px;
+}
+
+.page-title p {
+    color: var(--silver);
+
+    font-size: 12px;
+
+    margin-top: 6px;
+}
+
+/* =========================================================
+   WELCOME
+========================================================= */
+
+.welcome {
+    margin-bottom: 28px;
+}
+
+.welcome small {
+    color: var(--gold-dark);
+
+    font-size: 9px;
+
+    font-weight: bold;
+
+    letter-spacing: 1.5px;
+}
+
+.welcome h1 {
+    color: var(--silver-dark);
+
+    font-family: Georgia, serif;
+
+    font-size: 30px;
+
+    margin-top: 5px;
+}
+
+.welcome p {
+    color: var(--silver);
+
+    font-size: 12px;
+
+    margin-top: 5px;
+}
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 30px;
+}
+
+.stat {
+    position: relative;
+
+    background: var(--white);
+
+    border: 1px solid var(--silver-light);
+
+    border-radius: 11px;
+
+    padding: 22px;
+
+    overflow: hidden;
+
+    transition: .2s ease;
+}
+
+.stat::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--gold),
+            var(--gold-light),
+            var(--silver)
+        );
+}
+
+.stat:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 20px rgba(192, 192, 192, .20);
+}
+
+.stat-icon {
+    width: 42px;
+    height: 42px;
+
+    background: var(--gold-soft);
+
+    border: 1px solid var(--gold-light);
+
+    border-radius: 9px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+
+    margin-bottom: 15px;
+}
+
+.stat strong {
+    display: block;
+
+    color: var(--silver-dark);
+
+    font-size: 25px;
+}
+
+.stat span {
+    color: var(--silver);
+
+    font-size: 10px;
+}
+
+/* =========================================================
+   CARD / SECTION
+========================================================= */
+
+.section,
+.card {
+    background: var(--white);
+
+    border: 1px solid var(--silver-light);
+
+    border-radius: 11px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 2px 8px rgba(192, 192, 192, .10);
+}
+
+.section-header,
+.card-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.section-header h2,
+.card-header h2 {
+    color: var(--silver-dark);
+
+    font-family: Georgia, serif;
+
+    font-size: 20px;
+}
+
+.section-header a {
+    color: var(--gold-dark);
+
+    font-size: 10px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+}
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.card-header {
+    justify-content: flex-start;
+
+    gap: 12px;
+}
+
+.card-header h2 {
+    font-size: 18px;
+}
+
+.card-header p {
+    color: var(--silver);
+
+    font-size: 9px;
+
+    margin-top: 3px;
+}
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+
+    background: var(--gold-soft);
+
+    border: 1px solid var(--gold-light);
+
+    border-radius: 9px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+}
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.settings-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 20px;
+}
+
+.card.full {
+    grid-column: 1 / -1;
+}
+
+/* =========================================================
+   INFO ROW
+========================================================= */
+
+.info-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid var(--silver-light);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: var(--silver);
+
+    font-size: 10px;
+}
+
+.info-value {
+    color: var(--silver-dark);
+
+    font-size: 11px;
+
+    font-weight: bold;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--gold);
+
+    box-shadow:
+        0 0 0 3px rgba(212, 175, 55, .15);
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+
+    color: var(--silver-dark);
+
+    font-size: 10px;
+
+    font-weight: bold;
+
+    margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+
+    padding: 11px;
+
+    border: 1px solid var(--silver);
+
+    border-radius: 7px;
+
+    outline: none;
+
+    font-size: 11px;
+
+    background: var(--white);
+
+    color: var(--silver-dark);
+
+    transition: .2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--gold);
+
+    box-shadow:
+        0 0 0 3px rgba(212, 175, 55, .10);
+}
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.button,
+.btn {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 11px 18px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--gold-light),
+            var(--gold)
+        );
+
+    color: var(--white);
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    transition: .2s ease;
+}
+
+.button:hover,
+.btn:hover {
+    background:
+        linear-gradient(
+            135deg,
+            var(--gold),
+            var(--gold-dark)
+        );
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   SECONDARY
+========================================================= */
+
+.btn-secondary {
+    background: var(--silver-light);
+
+    color: var(--silver-dark);
+
+    box-shadow: none;
+}
+
+.btn-secondary:hover {
+    background: var(--silver);
+
+    color: var(--white);
+}
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+.btn-danger {
+    background: var(--silver);
+
+    color: var(--white);
+
+    box-shadow: none;
+}
+
+.btn-danger:hover {
+    background: var(--silver-dark);
+}
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+.message {
+    padding: 12px 15px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    margin-bottom: 20px;
+
+    border-left: 4px solid var(--gold);
+}
+
+.success {
+    background: var(--gold-soft);
+
+    color: var(--gold-dark);
+}
+
+.error {
+    background: var(--silver-soft);
+
+    color: var(--silver-dark);
+
+    border-left-color: var(--silver);
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-container {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 11px;
+}
+
+thead {
+    background: var(--silver-soft);
+
+    color: var(--gold-dark);
+
+    border-bottom: 2px solid var(--gold);
+}
+
+th {
+    padding: 13px;
+
+    text-align: left;
+
+    font-size: 10px;
+
+    letter-spacing: .3px;
+}
+
+td {
+    padding: 12px 13px;
+
+    border-bottom: 1px solid var(--silver-light);
+
+    color: var(--silver-dark);
+}
+
+tbody tr:hover {
+    background: var(--gold-soft);
+}
+
+/* =========================================================
+   BOOK IMAGE
+========================================================= */
+
+.book-image {
+    width: 65px;
+    height: 85px;
+
+    overflow: hidden;
+
+    border-radius: 6px;
+
+    background: var(--silver-soft);
+
+    border: 1px solid var(--silver);
+}
+
+.book-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+/* =========================================================
+   BOOK GRID
+========================================================= */
+
+.book-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 20px;
+}
+
+.book-card {
+    background: var(--white);
+
+    border: 1px solid var(--silver-light);
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    transition: .2s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 20px rgba(192, 192, 192, .20);
+
+    border-color: var(--gold);
+}
+
+.book-card .book-image {
+    width: 100%;
+    height: 230px;
+
+    border: none;
+
+    border-radius: 0;
+}
+
+.book-card .book-image img {
+    object-fit: contain;
+}
+
+.book-info,
+.book-content {
+    padding: 15px;
+}
+
+.book-info h3,
+.book-content h3 {
+    color: var(--silver-dark);
+
+    font-size: 13px;
+
+    margin-bottom: 10px;
+}
+
+.book-location {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: var(--gold);
+}
+
+.book-location small {
+    display: block;
+
+    color: var(--silver);
+
+    font-size: 8px;
+
+    margin-bottom: 2px;
+}
+
+.book-location strong {
+    color: var(--gold-dark);
+
+    font-size: 10px;
+}
+
+.book-code {
+    margin-top: 9px;
+
+    color: var(--silver);
+
+    font-size: 9px;
+}
+
+/* =========================================================
+   QUICK MENU
+========================================================= */
+
+.quick-menu,
+.quick-links {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+}
+
+.quick,
+.quick-link {
+    display: block;
+
+    border: 1px solid var(--silver-light);
+
+    border-radius: 9px;
+
+    padding: 18px;
+
+    text-decoration: none;
+
+    color: inherit;
+
+    transition: .2s ease;
+}
+
+.quick:hover,
+.quick-link:hover {
+    border-color: var(--gold);
+
+    background: var(--gold-soft);
+
+    transform: translateY(-2px);
+}
+
+.quick strong,
+.quick-link strong {
+    display: block;
+
+    color: var(--silver-dark);
+
+    font-size: 12px;
+
+    margin-bottom: 5px;
+}
+
+.quick span,
+.quick-link span {
+    color: var(--silver);
+
+    font-size: 9px;
+}
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.empty {
+    text-align: center;
+
+    padding: 35px;
+
+    color: var(--silver);
+
+    font-size: 11px;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-box {
+    display: flex;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    flex: 1;
+
+    padding: 12px;
+
+    border: 1px solid var(--silver);
+
+    border-radius: 7px;
+
+    outline: none;
+
+    color: var(--silver-dark);
+}
+
+.search-box input:focus {
+    border-color: var(--gold);
+}
+
+.search-box button {
+    padding: 0 20px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--gold-light),
+            var(--gold)
+        );
+
+    color: var(--white);
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.pagination {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    margin-top: 25px;
+}
+
+.pagination a,
+.pagination span {
+    min-width: 32px;
+
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 1px solid var(--silver);
+
+    border-radius: 6px;
+
+    text-decoration: none;
+
+    font-size: 10px;
+
+    color: var(--silver-dark);
+
+    background: var(--white);
+}
+
+.pagination a:hover,
+.pagination .active {
+    background: var(--gold);
+
+    border-color: var(--gold);
+
+    color: var(--white);
+}
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+.badge {
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    background: var(--gold-soft);
+
+    color: var(--gold-dark);
+
+    border: 1px solid var(--gold-light);
+
+    font-size: 8px;
+
+    font-weight: bold;
+}
+
+/* =========================================================
+   LOGOUT BOX
+========================================================= */
+
+.logout-box {
+    border: 1px solid var(--silver-light);
+
+    background: var(--white);
+}
+
+.logout-box h2 {
+    color: var(--gold-dark);
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.admin-footer {
+    margin-top: 35px;
+
+    padding: 18px;
+
+    text-align: center;
+
+    color: var(--silver);
+
+    font-size: 9px;
+
+    border-top: 1px solid var(--silver-light);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .book-grid {
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+}
+
+@media (max-width: 900px) {
+
+    .sidebar {
+        width: 70px;
+    }
+
+    .logo-text,
+    .menu-title,
+    .menu a span {
+        display: none;
+    }
+
+    .logo {
+        justify-content: center;
+
+        padding: 0;
+    }
+
+    .menu a {
+        justify-content: center;
+    }
+
+    .main {
+        margin-left: 70px;
+    }
+
+    .stats {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card.full {
+        grid-column: auto;
+    }
+
+    .book-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        margin-left: 0;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-menu,
+    .quick-links {
+        grid-template-columns: 1fr;
+    }
+
+    .book-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar {
+        padding: 0 20px;
+    }
+
+}
